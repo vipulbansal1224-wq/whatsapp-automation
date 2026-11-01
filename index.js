@@ -1,10 +1,21 @@
 import makeWASocket, { DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys';
 import qrcode from 'qrcode-terminal';
 import pino from 'pino';
-import readline from 'readline';
+import http from 'http';
 
 // Logger setup (silent for clean terminal UI)
 const logger = pino({ level: 'silent' });
+
+// Simple HTTP server for cloud health checks (Render, Railway, Koyeb)
+const PORT = process.env.PORT || 3000;
+let botStatus = 'Initializing';
+
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ status: 'ok', bot: botStatus, timestamp: new Date().toISOString() }));
+}).listen(PORT, () => {
+  console.log(`🌐 Health-check server running on port ${PORT}`);
+});
 
 async function startWhatsAppBot() {
   console.log('\n========================================');
@@ -34,6 +45,7 @@ async function startWhatsAppBot() {
     }
 
     if (connection === 'close') {
+      botStatus = 'Disconnected';
       const shouldReconnect =
         lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
       console.log('\n⚠️ Connection closed due to:', lastDisconnect?.error?.message || 'unknown error');
@@ -45,6 +57,7 @@ async function startWhatsAppBot() {
         console.log('❌ Logged out. Delete the ./auth_info folder to scan QR again.');
       }
     } else if (connection === 'open') {
+      botStatus = 'Connected';
       console.log('\n✅ WhatsApp connected successfully!');
       console.log('🎉 Automation is now active.\n');
       console.log('Commands supported in chat:');
