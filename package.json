@@ -1,0 +1,16 @@
+{
+  "name": "whatsapp-automation",
+  "version": "1.0.0",
+  "description": "WhatsApp Web Automation Bot and Multi-Device Bridge",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@whiskeysockets/baileys": "^6.7.18",
+    "pino": "^9.6.0",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
